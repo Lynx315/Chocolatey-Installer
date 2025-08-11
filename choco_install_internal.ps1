@@ -108,7 +108,7 @@ if ($installGui.ToUpper() -eq 'Y') {
         choco install chocolateygui -y
 
         Write-Host 'Chocolatey GUI installed. Launching GUI now...' -ForegroundColor Green
-        Start-Process 'choco' -ArgumentList 'gui'
+        Start-Process 'chocolateygui' 
 
         Start-Sleep -Seconds 5
         Write-Host 'Installation successful. Closing this window...' -ForegroundColor Cyan
@@ -122,5 +122,4 @@ if ($installGui.ToUpper() -eq 'Y') {
     Write-Host ''
     Write-Host 'Chocolatey installation completed.' -ForegroundColor Green
     Write-Host 'Use "choco" command in PowerShell to interact with Chocolatey.' -ForegroundColor Cyan
-    # Kein exit, kein pause - PowerShell bleibt offen
 }
