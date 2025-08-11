@@ -82,7 +82,7 @@ failed."                                             failed or already latest.
 
 License
 
-This project is licensed under the MIT License. See LICENSE file for details.
+This project is licensed under the GNU v3 License. See LICENSE file for details.
 
 ---
 
