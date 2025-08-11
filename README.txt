@@ -89,7 +89,7 @@ This project is licensed under the GNU v3 License. See LICENSE file for details.
 Legal Disclaimer
 
 - Chocolatey and Chocolatey GUI are trademarks and products of their respective owners. 
-This repository contains only a third-party installer script created independently to automate the installation or upgrade of Chocolatey and optionally its GUI.
+- This repository contains only a third-party installer script created independently to automate the installation or upgrade of Chocolatey and optionally its GUI.
 - This script is not affiliated with or endorsed by Chocolatey Software, Inc. or any of its partners.
 - This script is intended mainly for private use only. The author does not take any responsibility for security, data loss, or any damages caused by using this script.
 - Use this script at your own risk. The author takes no responsibility for any damage or issues caused by running this script.
