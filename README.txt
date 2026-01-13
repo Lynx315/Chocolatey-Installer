@@ -36,9 +36,7 @@ How to use
 3. You’ll be asked to confirm installation or upgrade (enter ‘Y’ for yes).  
 4. Internet connection is tested; without it, the script exits.  
 5. Optionally, you can choose to install the Chocolatey GUI as well (enter ‘Y’ for yes).  
-6. After installation:  
-   - If GUI is installed, it launches automatically and the script window closes shortly after.  
-   - If CLI only, the PowerShell window stays open so you can use Chocolatey commands directly.
+6. After installation you can use Chocolatey but its recommended to restart your pc 
 
 ---
 
