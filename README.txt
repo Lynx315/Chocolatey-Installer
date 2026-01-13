@@ -16,6 +16,7 @@ Contents
 - choco_install_internal.ps1 — Main PowerShell script for installation and upgrade.  
 - install.bat — Batch file to easily launch the PowerShell script with the correct execution policy.  
 - README.md — This documentation.
+- License — The lciense fille.
 
 ---
 
