@@ -1,6 +1,6 @@
 # Chocolatey installer / upgrader (fixed version)
 
-# TLS 1.2 is required by chocolatey.org.
+# TLS 1.2 is required by chocolatey.org. Set it first so the internet check
 # below doesn't fail on older Windows PowerShell setups.
 try {
     [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor 3072
@@ -78,6 +78,12 @@ function Test-ChocoExitOk([int]$code) {
     return ($code -in 0, 1641, 3010)
 }
 
+# Chocolatey GUI is installed if its package folder exists in the lib folder
+function Test-ChocoGuiInstalled {
+    $root = if ($env:ChocolateyInstall) { $env:ChocolateyInstall } else { Join-Path $env:ProgramData 'chocolatey' }
+    return (Test-Path (Join-Path $root 'lib\chocolateygui'))
+}
+
 Clear-Host
 
 # ASCII Art
@@ -110,8 +116,12 @@ if (-not (Test-InternetConnection)) {
     exit
 }
 
-Write-Host ''
-Write-Host 'Do you want to install the Chocolatey GUI as well? (Y/N)' -ForegroundColor Yellow
+$guiInstalled = Test-ChocoGuiInstalled
+if ($guiInstalled) {
+    Write-Host 'Chocolatey GUI is installed. Upgrade it as well? (Y/N)' -ForegroundColor Yellow
+} else {
+    Write-Host 'Do you want to install the Chocolatey GUI as well? (Y/N)' -ForegroundColor Yellow
+}
 $installGui = Test-Yes (Read-Host)
 
 try { Set-ExecutionPolicy Bypass -Scope Process -Force -ErrorAction Stop } catch { }
@@ -135,7 +145,7 @@ if ($existingExe) {
     Write-Host ''
     Write-Host 'Installing Chocolatey...' -ForegroundColor Yellow
     try {
-        iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+        Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
     } catch [System.Net.WebException] {
         Write-Host 'Error: No internet connection or URL unreachable.' -ForegroundColor Red
         PauseForExit
@@ -162,21 +172,30 @@ if ([string]::IsNullOrEmpty($newVersion)) {
 
 if ($installGui) {
     try {
+        $verb = if ($guiInstalled) { 'Upgrading' } else { 'Installing' }
         Write-Host ''
-        Write-Host 'Installing Chocolatey GUI...' -ForegroundColor Yellow
-        choco install chocolateygui -y
+        $done = if ($guiInstalled) { 'upgraded' } else { 'installed' }
+
+        # A running GUI can lock its files and make the upgrade fail
+        if ($guiInstalled -and (Get-Process -Name ChocolateyGui -ErrorAction SilentlyContinue)) {
+            Write-Host 'Please close Chocolatey GUI first, then press any key to continue...' -ForegroundColor Yellow
+            $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
+        }
+
+        Write-Host "$verb Chocolatey GUI..." -ForegroundColor Yellow
+        choco upgrade chocolateygui -y
         if (-not (Test-ChocoExitOk $LASTEXITCODE)) { throw "choco exited with code $LASTEXITCODE" }
 
         Update-SessionPath
         $gui = Get-Command chocolateygui -CommandType Application -ErrorAction SilentlyContinue
         if ($gui) {
-            Write-Host 'Chocolatey GUI installed. Launching GUI now...' -ForegroundColor Green
+            Write-Host "Chocolatey GUI $done. Launching GUI now..." -ForegroundColor Green
             Start-Process $gui.Source
             Start-Sleep -Seconds 5
             Write-Host 'Installation successful. Closing this window...' -ForegroundColor Cyan
             exit
         } else {
-            Write-Host 'Chocolatey GUI installed, but could not be launched automatically. Start it from the Start menu.' -ForegroundColor Yellow
+            Write-Host "Chocolatey GUI $done, but could not be launched automatically. Start it from the Start menu." -ForegroundColor Yellow
             PauseForExit
             exit
         }
